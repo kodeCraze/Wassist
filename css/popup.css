@@ -58,7 +58,6 @@ button {
 
 .contact-box {
   position: sticky;
-  top: 60px;
   z-index: 99;
   background: #fff;
   margin: -16px -16px 0;
@@ -95,7 +94,7 @@ button {
   display: flex;
   flex-direction: column;
   align-items: center;
-  background-color: #eeeeee;
+  background-color: #ffffff;
   padding: 15px;
 }
 
