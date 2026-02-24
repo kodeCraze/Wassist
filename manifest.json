@@ -11,16 +11,12 @@
     "default_title": "WA Productivity Assistant"
   },
   "permissions": [
-    "cookies",
     "storage",
     "unlimitedStorage",
     "notifications",
     "tabs",
     "activeTab",
-    "identity",
-    "identity.email",
-    "sidePanel",
-    "alarms"
+    "sidePanel"
   ],
   "background": {
     "service_worker": "js/background.js"

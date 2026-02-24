@@ -1089,19 +1089,8 @@ $(function () {
   // Always open WhatsApp Web when extension opens
   checkVisit();
 
-  // Wait for authentication before initializing other features
-  window.addEventListener('userAuthenticated', function () {
-    init();
-  });
-
-  // Check authentication asynchronously
-  if (window.authSystem && window.authSystem.isAuthenticated) {
-    window.authSystem.isAuthenticated().then(isAuth => {
-      if (isAuth) {
-        init();
-      }
-    });
-  }
+  // Initialize features directly without authentication
+  init();
 });
 
 function init() {

@@ -15,18 +15,10 @@ chrome.runtime.onInstalled.addListener(async (details) => {
   console.log('Extension installed/updated:', details.reason);
   chrome.runtime.setUninstallURL("https://www.google.com");
 
-  // Clear session on install/update/enable
-  if (details.reason === 'install' || details.reason === 'update' || details.reason === 'enable') {
-    chrome.storage.session.clear();
-    chrome.alarms.clear('autoLogout');
-  }
   await ensureWhatsAppContentInjected();
 });
 
 chrome.runtime.onStartup.addListener(async () => {
-  console.log('Browser started - clearing session');
-  chrome.storage.session.clear();
-  chrome.alarms.clear('autoLogout');
   await ensureWhatsAppContentInjected();
 });
 
@@ -34,48 +26,8 @@ chrome.action.onClicked.addListener(async () => {
   await ensureWhatsAppContentInjected();
 });
 
-// Handle 24-hour auto-logout alarm
-chrome.alarms.onAlarm.addListener((alarm) => {
-  if (alarm.name === 'autoLogout') {
-    console.log('24-hour auto-logout triggered');
-    performAutoLogout();
-  }
-});
-
-// Auto-logout function
-async function performAutoLogout() {
-  const keysToRemove = [
-    'authenticated',
-    'csrf_token',
-    'logout_token',
-    'user_email',
-    'user_data',
-    'session_timestamp'
-  ];
-
-  try {
-    console.log('Session cleared');
-    await chrome.storage.local.remove(keysToRemove);
-    chrome.alarms.clear('autoLogout');
-    console.log('Auth data cleared successfully!');
-  } catch (error) {
-    console.log('Logout attempt failed:', error);
-  }
-}
-
 // Message handling
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-  if (request.type === 'SET_LOGOUT_ALARM') {
-    // Set 24-hour alarm
-    chrome.alarms.create('autoLogout', { delayInMinutes: 7 * 24 * 60 });
-    console.log('24-hour logout alarm set');
-  }
-
-  if (request.type === 'CLEAR_LOGOUT_ALARM') {
-    chrome.alarms.clear('autoLogout');
-    console.log('Logout alarm cleared');
-  }
-
   if (request.type === 'ENSURE_CONTENT_INJECTED') {
     ensureWhatsAppContentInjected();
     sendResponse({ success: true });
