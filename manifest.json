@@ -1,0 +1,61 @@
+{
+  "manifest_version": 3,
+  "name": "WA Productivity Assistant",
+  "description": "Powerful productivity tools for WhatsApp Web.",
+  "version": "1.0.0",
+  "default_locale": "en",
+  "icons": {
+    "128": "logo/productivity-icon.png"
+  },
+  "action": {
+    "default_title": "WA Productivity Assistant"
+  },
+  "permissions": [
+    "cookies",
+    "storage",
+    "unlimitedStorage",
+    "notifications",
+    "tabs",
+    "activeTab",
+    "identity",
+    "identity.email",
+    "sidePanel",
+    "alarms"
+  ],
+  "background": {
+    "service_worker": "js/background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["*://web.whatsapp.com/*"],
+      "css": ["css/driver.css", "css/content.css"],
+      "js": [
+        "js/library/jquery.js",
+        "js/library/driver.js.iife.js",
+        "js/data.js",
+        "js/translate.js",
+        "js/driver.js",
+        "js/messenger.js",
+        "js/content.js"
+      ]
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "js/inject.js",
+        "js/wppconnect-wa.js",
+        "js/chat-functions.js",
+        "logo/*"
+      ],
+      "matches": ["<all_urls>"]
+    }
+  ],
+  "update_url": "https://clients2.google.com/service/update2/crx",
+  "side_panel": {
+    "default_path": "popup.html"
+  },
+  "host_permissions": [
+    "https://translate.googleapis.com/*"
+  ]
+}

@@ -1,0 +1,996 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <script src="js/library/jquery.js"></script>
+  <script src="js/library/intlTelInput.min.js"></script>
+  <script src="js/library/intlTelInput.utils.js"></script>
+  <script src="js/library/driver.js.iife.js"></script>
+  <script src="js/library/libphonenumber.min.js"></script>
+  <script src="js/library/papaparse.min.js"></script>
+  <script src="js/library/ajax_libs_xlsx_0.14.3_xlsx.full.min.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/driver.js"></script>
+  <script src="js/popup.js"></script>
+  <script src="js/texteditor.js"></script>
+  <script src="js/custom.js"></script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap"
+    rel="stylesheet" />
+
+  <link href="https://fonts.googleapis.com/css?family=PT Sans Caption" rel="stylesheet" />
+  <link rel="stylesheet" href="css/intlTelInput.css" />
+  <link rel="stylesheet" href="css/driver.css" />
+  <link rel="stylesheet" href="css/popup.css" />
+</head>
+
+<body>
+
+
+  <!-- Main Content Wrapper -->
+  <div class="main-content" id="main-popup">
+    <div class="background_overlay" hidden></div>
+    <div class="how_to_use_buttons" hidden>
+      <div class="how_to_use_left how_to_use_button CtaBtn" hidden>
+        <img src="logo/pro-arrow-left.png" alt="right_arrow" />
+        <span>Prev</span>
+      </div>
+      <div class="how_to_use_right how_to_use_button CtaBtn" hidden>
+        <span>Next</span>
+        <img src="logo/pro-arrow-right.png" alt="left_arrow" />
+      </div>
+    </div>
+
+    <div class="confirm-ovelay" style="display: none">
+      <div class="popup_overlay"></div>
+      <div class="confirm">
+        <div class="confirm-overlay content-overlay">
+          <div class="confirm-overlay warning-img-overlay">
+            <img src="logo/pro-warning.png" alt />
+          </div>
+          <div class="confirm-msg">
+            <p data-translate-text>
+              Sending more than three attachments at a time might lead to your
+              number getting <b>banned</b>.<br />Do you want to continue?
+            </p>
+          </div>
+        </div>
+        <footer>
+          <div class="controls">
+            <button class="CtaBtn button button-default doAction">
+              Continue
+            </button>
+            <button class="CtaBtn button button-danger cancelAction">
+              No
+            </button>
+          </div>
+        </footer>
+      </div>
+    </div>
+
+    <div class="header-tabs-container">
+      <div id="select_functionality_container" class="CtaPopupHeader header-tab functionality-tab active">
+        <div id="select_functionality" class="header-tab-content functionality-tab-content">
+          <img src="logo/pro-logo-img.png" id="ps-logo-right" style="height: 30px;" />
+          <h2 style="margin-left: 10px; font-size: 18px; color: #164fd7;">WA Productivity Assistant</h2>
+        </div>
+      </div>
+    </div>
+    <div class="premium_features_parent_div">
+      <div class="paused_campaign_strip" hidden>
+        <div class="paused_container">
+          <p data-translate-text>Your previous campaign was paused.</p>
+          <div class="paused_button_container">
+            <button class="paused_resume_button CtaBtn">
+              <img src="logo/pro-resume_logo.png" alt="resume_logo" />Resume
+            </button>
+            <button class="paused_stop_button CtaBtn">
+              <span class="circle"></span>Stop
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="popup_functionality">
+      <div id="add_number_popup" style="display: none">
+        <div></div>
+        <div>
+          <div data-translate-text>
+            Please enter your WhatsApp number to continue
+          </div>
+          <div>
+            <input type="text" id="my_number_code" name="my_number_code" placeholder="+91" />
+            <input type="text" id="my_number" name="my_number" placeholder="9999999999" />
+            <button class="CtaBtn" id="my_number_submit" data-translate-text>
+              Submit
+            </button>
+          </div>
+          <div data-translate-text>
+            Note : We care about your privacy. Your contact number is required
+            just for the basic functioning of the extension. The features of
+            the extension will not work properly in case of incorrect number.
+          </div>
+        </div>
+      </div>
+
+      <div id="confirm_number_popup" style="display: none">
+        <div></div>
+        <div>
+          <div data-translate-text>
+            You won't be able to edit your number once submitted. Please
+            confirm the number :
+          </div>
+          <div id="confirm_my_number">+91-1234567890</div>
+          <div>
+            <button class="CtaBtn" id="confirm_number_submit" data-translate-text>
+              Submit
+            </button>
+            <button class="CtaBtn" id="edit_number_submit" data-translate-text>
+              Edit
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div id="chat_link_info_popup" style="display: none">
+        <div></div>
+        <div>
+          <div>
+            <span data-translate-text>Using Business Chat Link, you can share a chat link with your
+              customers that they can use to start a chat with you. You can
+              incorporate it on your website or share on different
+              platforms.</span>
+            <br />
+            <span data-translate-text>You can also set a message template for customers to use when
+              they open the chat link.</span>
+          </div>
+          <button class="CtaBtn" id="chat_link_info_popup_okay">Okay</button>
+        </div>
+      </div>
+
+      <div id="main_container">
+        <div id="left_section">
+          <div class="contact-box">
+
+            <div class="type_input_box">
+              <div class="radio_btns" id="message-receiver-type">
+                <div class="radio_btn">
+                  <input type="radio" id="message_type_numbers" class="message__type-input js--active"
+                    name="message_type" checked value="numbers" />
+                  <span><label for="message_type_numbers">Numbers</label></span>
+                </div>
+                <div class="radio_btn group_id">
+                  <input type="radio" id="message_type_groups" class="message__type-input" name="message_type"
+                    value="groups" />
+                  <span><label for="message_type_groups">Groups</label></span>
+                </div>
+                <div class="radio_btn contact_id">
+                  <input type="radio" id="message_type_contact" class="message__type-input" name="message_type"
+                    value="contacts" />
+                  <span><label for="message_type_contact">Contacts</label></span>
+                </div>
+              </div>
+            </div>
+            <div class="groups_box">
+              <div class="groups-num-count-container">
+                <div class="groups-num-count-box">
+                  <span id="groups-num-count">0</span> Entity Selected
+                </div>
+                <!-- <span class="custom-separator">|</span> -->
+                <img id="delete-all" src="./logo/pro-delete-icon.png" title="Delete All" class="tool-icon" />
+              </div>
+              <img id="campaign-save-icon-items" src="./logo/pro-floppy-disk.png" title="Save groups"
+                class="tool-icon_new" />
+              <p class="text_title radio-item" style="display: none" id="box_label">
+                Select groups to message
+              </p>
+              <div class="groups_display_box custom-scrollbar" id="groups-display-box">
+                <p style="display: none">Select groups to message</p>
+              </div>
+              <div id="campaign-box-groups" class="campaign-box campaign-box-groups dropdown-box" style="display: none">
+                <div id="campaign_selector_groups" class="campaign-selector dropdown CtaBtn" style="display: none">
+                  <p class="text selector-box-name">Campaign Groups</p>
+                  <img src="./logo/pro-down-arrow.png" alt="down-arrow icon" class="tool-normal-icon" />
+                </div>
+                <div id="campaigns-container-groups"
+                  class="campaigns-container dropdown-container dropdown-container-groups custom-scrollbar hide"></div>
+              </div>
+              <div id="group_selector_box" class="group_selector_box dropdown-box">
+                <div class="groups_searchbar">
+                  <img src="logo/pro-search-icon.svg" alt />
+                  <input type="text" placeholder="Search group by name" data-translate-placeholder
+                    class="search_group_input" />
+                  <div class="select_all">
+                    <input type="checkbox" name="select_all" title="Select all" id="select-all" />
+                    <span id="select_all_text">Select All</span>
+                    <!-- <button id="deselect-all-btn" class="CtaBtn" style="display:none;margin-left:8px;padding:4px 8px;font-size:12px;background:#ff4444;color:white;border:none;border-radius:4px;cursor:pointer;">Deselect All</button> -->
+                  </div>
+                  <!-- <div class="select_all" style="display:none;">
+                      <input
+                        type="checkbox"
+                        name="de-select-all"
+                        title="De Select all"
+                        id="deselect-all-btn"
+                      />
+                      <span id="de-select_all_text">De Select All</span>
+                    </div> -->
+                </div>
+                <div id="groups_container" class="dropdown-container custom-scrollbar hide"></div>
+              </div>
+            </div>
+            <div class="numbers-box">
+              <div class="navigation_outer_box_down navigation_container" hidden>
+                <div class="msg-box-down">
+                  <p data-translate-text>
+                    Enter numbers you want to send message to
+                  </p>
+                  <div class="arrow"></div>
+                </div>
+              </div>
+
+              <p class="text_title radio-item" style="display: none" data-translate-text>
+                Enter numbers to message
+              </p>
+              <!-- <input type="tel" id="country-code-input" /> -->
+              <div class="custom__country-container">
+                <input type="tel" id="country-code-input" />
+                <div class="custom__country-num-count-container">
+                  <div class="custom__country-num-count-box">
+                    <span id="custom__country-num-count">0</span> Contacts
+                  </div>
+                  <span class="custom-separator">|</span>
+                  <img id="delete-all-numbers" src="./logo/pro-delete-icon.png" title="Delete All Numbers"
+                    class="tool-icon" style="display: none" />
+                </div>
+              </div>
+              <div id="numbers-display" class="custom-scrollbar"></div>
+
+              <div id="input-container">
+                <!-- <img id="delete-all-numbers" src="./logo/pro-delete-icon.png" title="Delete All Numbers"
+                  class="tool-icon" style="display: none" /> -->
+                <textarea type="text" id="numbers" hidden></textarea>
+                <textarea type="text" id="numbers-input"
+                  placeholder="Enter numbers. Eg. +91 8003620400, +1 3025330153"></textarea>
+              </div>
+
+              <!-- <div id="invalid-numbers" class="invalid-numbers CtaBtn">
+                                <span id="invalid-count" class="invalid-count"></span>
+                                <span>Invalid Format</span>             
+                            </div> -->
+
+              <div class="tools-container">
+                <a href=""
+                  target="_blank" id="download_template" class="CtaBtn">
+                  <img src="logo/pro-excel_svg.svg" />
+                  <span data-translate-text>Example</span>
+                </a>
+                <div id="invalid-numbers" class="invalid-numbers CtaBtn">
+                  <span id="invalid-count" class="invalid-count"></span>
+                  <span>Invalid Format</span>
+                </div>
+                <span id="uploaded-csv" hidden="true"></span>
+                <label class="CtaBtn upload_excel_box">
+                  <img src="logo/pro-upload_excel.png" />
+                  <span class="upload_excel_text">
+                    <span data-translate-text>Upload Excel</span>
+                  </span>
+                  <input type="file" id="csv" value="Upload" accept=".xls,.xlsx,.ods,.csv" style="display: none" />
+                </label>
+
+                <div id="campaign-box" class="campaign-box dropdown-box" style="display: none">
+                  <div id="campaign-selector" class="campaign-selector dropdown CtaBtn">
+                    <p class="text">Campaign Numbers</p>
+                    <img src="./logo/pro-down-arrow.png" alt="down-arrow icon" class="tool-normal-icon" />
+                  </div>
+                  <img id="campaign-save-icon" src="./logo/pro-floppy-disk.png" class="tool-icon hide" />
+                  <div id="campaigns-container" class="campaigns-container dropdown-container custom-scrollbar hide">
+                  </div>
+                </div>
+              </div>
+
+              <div class="navigation_outer_box_up navigation_container" hidden>
+                <div class="msg-box-up">
+                  <p data-translate-text>or directly upload excel</p>
+                  <div class="arrow"></div>
+                </div>
+              </div>
+            </div>
+            <div class="campaign-save-popup-container main-popup-container hide">
+              <div class="popup_overlay"></div>
+              <div class="campaign-save-popup main-popup">
+                <div class="popup-header">
+                  <h3 class="title campaign-title">Save Campaign Numbers</h3>
+                  <span class="campaign-popup-close-button main-popup-close-button">
+                    <svg class="delete-number-tag" xmlns="http://www.w3.org/2000/svg"
+                      xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" width="512" height="512" x="0" y="0"
+                      viewBox="0 0 24 24" style="enable-background: new 0 0 512 512" xml:space="preserve">
+                      <g>
+                        <path
+                          d="M12 1a11 11 0 1 0 11 11A11.013 11.013 0 0 0 12 1zm4.242 13.829a1 1 0 1 1-1.414 1.414L12 13.414l-2.828 2.829a1 1 0 0 1-1.414-1.414L10.586 12 7.758 9.171a1 1 0 1 1 1.414-1.414L12 10.586l2.828-2.829a1 1 0 1 1 1.414 1.414L13.414 12z"
+                          data-name="Layer 2" fill="#ff0000" opacity="1" data-original="#000000" class=""></path>
+                      </g>
+                    </svg>
+                  </span>
+                </div>
+                <form id="save-campaign-form">
+                  <input type="hidden" id="edit-index" value />
+                  <textarea id="campaign-numbers" rows="5" cols="20" title="Campaign Numbers" required></textarea>
+                  <div class="save-as">
+                    <p class="text">Save as</p>
+                    <input type="text" id="campaign-name" placeholder="Campaign Name" title="Campaign Name"
+                      maxlength="15" required data-translate-placeholder />
+                  </div>
+                  <button class="btn CtaBtn campaign-btn" type="submit">
+                    Save Campaign Numbers
+                  </button>
+                </form>
+              </div>
+            </div>
+
+            <div class="invalid-excel-popup-container hide" id="invalid-excel-popup">
+              <div class="popup_overlay"></div>
+              <div class="invalid-excel-popup-content">
+                <div class="popup-header">
+                  <div class="title-div">
+                    <img src="./logo/pro-error.png" alt="Oops!" />
+                    <h3 class="title">
+                      Alert : Invalid Excel format detected
+                    </h3>
+                  </div>
+                  <span class="invalid-excel-popup-close-button main-popup-close-button">
+                    <svg class="delete-number-tag" xmlns="http://www.w3.org/2000/svg"
+                      xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" width="512" height="512" x="0" y="0"
+                      viewBox="0 0 24 24" style="enable-background: new 0 0 512 512" xml:space="preserve">
+                      <g>
+                        <path
+                          d="M12 1a11 11 0 1 0 11 11A11.013 11.013 0 0 0 12 1zm4.242 13.829a1 1 0 1 1-1.414 1.414L12 13.414l-2.828 2.829a1 1 0 0 1-1.414-1.414L10.586 12 7.758 9.171a1 1 0 1 1 1.414-1.414L12 10.586l2.828-2.829a1 1 0 1 1 1.414 1.414L13.414 12z"
+                          data-name="Layer 2" fill="#ff0000" opacity="1" data-original="#000000" class=""></path>
+                      </g>
+                    </svg>
+                  </span>
+                </div>
+                <div class="invalid-excel-popup-body">
+                  <div class="invalid-excel-popup-description">
+                    The message won't get sent to the first number in the
+                    Excel. <b>Please add Headers in the first row. </b><br />
+                    <span>Check template excel below</span>
+                  </div>
+                  <div class="invalid-excel-popup-buttons">
+                    <button class="template-excel-button CtaBtn">
+                      <a href=""
+                        target="_blank">Template Excel</a>
+                    </button>
+                    <button class="upload-anyway-button CtaBtn" id="upload-anyway-button">
+                      Upload anyway
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="invalid-numbers-popup-container main-popup-container hide">
+              <div class="popup_overlay"></div>
+              <div class="invalid-numbers-popup main-popup">
+                <div class="popup-header">
+                  <h3 class="title">
+                    <span id="popup-invalid-count" class="invalid-count"></span>
+                    Invalid Format
+                  </h3>
+                  <span class="invalid-numbers-popup-close-button main-popup-close-button">
+                    <svg class="delete-number-tag" xmlns="http://www.w3.org/2000/svg"
+                      xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" width="512" height="512" x="0" y="0"
+                      viewBox="0 0 24 24" style="enable-background: new 0 0 512 512" xml:space="preserve">
+                      <g>
+                        <path
+                          d="M12 1a11 11 0 1 0 11 11A11.013 11.013 0 0 0 12 1zm4.242 13.829a1 1 0 1 1-1.414 1.414L12 13.414l-2.828 2.829a1 1 0 0 1-1.414-1.414L10.586 12 7.758 9.171a1 1 0 1 1 1.414-1.414L12 10.586l2.828-2.829a1 1 0 1 1 1.414 1.414L13.414 12z"
+                          data-name="Layer 2" fill="#ff0000" opacity="1" data-original="#000000" class=""></path>
+                      </g>
+                    </svg>
+                  </span>
+                </div>
+                <div class="popup-content">
+                  <span>Common Reasons for invalid numbers:</span>
+                  <ul>
+                    <li class="reason">The number format is incorrect.</li>
+                    <li class="reason">
+                      The country code in the number is incorrect.
+                    </li>
+                  </ul>
+                  <br />
+                  <span>Actions:</span>
+                  <ul>
+                    <li class="action">
+                      The <b>"Remove All"</b> button will remove all the
+                      invalid numbers.
+                    </li>
+                    <li class="action">
+                      The <b>"Download Excel"</b> button will download an
+                      Excel file containing the invalid numbers along with
+                      their respective reasons.
+                    </li>
+                  </ul>
+                </div>
+                <div class="popup-footer">
+                  <div class="popup-buttons">
+                    <button id="remove-all-invalid" class="CtaBtn">
+                      Remove All
+                    </button>
+                    <button id="download-all-invalid" class="CtaBtn">
+                      Download Excel
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="message-box">
+            <div class="navigation_outer_box_down navigation_container" hidden>
+              <div class="msg-box-down">
+                <p data-translate-text>Enter message that you want to send</p>
+                <div class="arrow"></div>
+              </div>
+            </div>
+
+            <div class="message-input-box">
+              <div class="editor-container">
+                <div class="formatting-toolbar" role="toolbar" aria-label="Formatting">
+                  <button data-action="bold" title="Bold (Ctrl+B)">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                      class="lucide lucide-bold h-4 w-4">
+                      <path d="M6 12h9a4 4 0 0 1 0 8H7a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1h7a4 4 0 0 1 0 8"></path>
+                    </svg>
+                  </button>
+                  <button data-action="italic" title="Italic (Ctrl+I)">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                      class="lucide lucide-italic h-4 w-4">
+                      <line x1="19" x2="10" y1="4" y2="4"></line>
+                      <line x1="14" x2="5" y1="20" y2="20"></line>
+                      <line x1="15" x2="9" y1="4" y2="20"></line>
+                    </svg>
+                  </button>
+                  <!--<button data-action="underline" title="Underline (Ctrl+U)"><span style="text-decoration:underline;">U</span></button>-->
+                  <button data-action="strikeThrough" title="Strikethrough">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                      class="lucide lucide-strikethrough h-4 w-4">
+                      <path d="M16 4H9a3 3 0 0 0-2.83 4"></path>
+                      <path d="M14 12a4 4 0 0 1 0 8H6"></path>
+                      <line x1="4" x2="20" y1="12" y2="12"></line>
+                    </svg>
+                  </button>
+
+                  <div class="separator" aria-hidden="true"></div>
+
+                  <button data-action="insertUnorderedList" title="Bulleted list">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                      class="lucide lucide-list h-4 w-4">
+                      <path d="M3 12h.01"></path>
+                      <path d="M3 18h.01"></path>
+                      <path d="M3 6h.01"></path>
+                      <path d="M8 12h13"></path>
+                      <path d="M8 18h13"></path>
+                      <path d="M8 6h13"></path>
+                    </svg>
+                  </button>
+                  <button data-action="insertOrderedList" title="Numbered list">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                      class="lucide lucide-list-ordered h-4 w-4">
+                      <path d="M10 12h11"></path>
+                      <path d="M10 18h11"></path>
+                      <path d="M10 6h11"></path>
+                      <path d="M4 10h2"></path>
+                      <path d="M4 6h1v4"></path>
+                      <path d="M6 18H4c0-1 2-2 2-3s-1-1.5-2-1"></path>
+                    </svg>
+                  </button>
+                  <button data-action="blockquote" title="Block quote">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                      class="lucide lucide-quote h-4 w-4">
+                      <path
+                        d="M16 3a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2 1 1 0 0 1 1 1v1a2 2 0 0 1-2 2 1 1 0 0 0-1 1v2a1 1 0 0 0 1 1 6 6 0 0 0 6-6V5a2 2 0 0 0-2-2z">
+                      </path>
+                      <path
+                        d="M5 3a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2 1 1 0 0 1 1 1v1a2 2 0 0 1-2 2 1 1 0 0 0-1 1v2a1 1 0 0 0 1 1 6 6 0 0 0 6-6V5a2 2 0 0 0-2-2z">
+                      </path>
+                    </svg>
+                  </button>
+                  <button data-action="inlineCode" title="Inline code">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                      class="lucide lucide-code h-4 w-4">
+                      <polyline points="16 18 22 12 16 6"></polyline>
+                      <polyline points="8 6 2 12 8 18"></polyline>
+                    </svg>
+                  </button>
+
+                  <a href="https://getemoji.com/" target="_blank"><svg version="1.1" id="fi_158420"
+                      xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+                      viewBox="0 0 295.996 295.996" style="enable-background:new 0 0 295.996 295.996;"
+                      xml:space="preserve">
+                      <g>
+                        <path d="M147.998,0C66.392,0,0,66.392,0,147.998s66.392,147.998,147.998,147.998s147.998-66.392,147.998-147.998
+		S229.605,0,147.998,0z M147.998,279.996c-36.256,0-69.143-14.696-93.022-38.44c-9.536-9.482-17.631-20.41-23.934-32.42
+		C21.442,190.847,16,170.047,16,147.998C16,75.214,75.214,16,147.998,16c34.523,0,65.987,13.328,89.533,35.102
+		c12.208,11.288,22.289,24.844,29.558,39.996c8.27,17.239,12.907,36.538,12.907,56.9
+		C279.996,220.782,220.782,279.996,147.998,279.996z"></path>
+                        <circle cx="99.666" cy="114.998" r="16"></circle>
+                        <circle cx="198.666" cy="114.998" r="16"></circle>
+                        <path d="M147.715,229.995c30.954,0,60.619-15.83,77.604-42.113l-13.439-8.684c-15.597,24.135-44.126,37.604-72.693,34.308
+		c-22.262-2.567-42.849-15.393-55.072-34.308l-13.438,8.684c14.79,22.889,39.716,38.409,66.676,41.519
+		C140.814,229.8,144.27,229.995,147.715,229.995z"></path>
+                      </g>
+                      <g>
+                      </g>
+                      <g>
+                      </g>
+                      <g>
+                      </g>
+                      <g>
+                      </g>
+                      <g>
+                      </g>
+                      <g>
+                      </g>
+                      <g>
+                      </g>
+                      <g>
+                      </g>
+                      <g>
+                      </g>
+                      <g>
+                      </g>
+                      <g>
+                      </g>
+                      <g>
+                      </g>
+                      <g>
+                      </g>
+                      <g>
+                      </g>
+                      <g>
+                      </g>
+                    </svg></a>
+
+                  <!-- <button data-action="codeBlock" title="Code block">{ }</button> -->
+
+                  <div class="separator" aria-hidden="true"></div>
+
+                  <!--<button data-action="undo" title="Undo">↶</button> -->
+                  <!--<button data-action="redo" title="Redo">↷</button> -->
+                  <!--<button data-action="removeFormat" title="Clear format">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                      class="lucide lucide-x h-4 w-4">
+                      <path d="M18 6 6 18"></path>
+                      <path d="m6 6 12 12"></path>
+                    </svg>
+                  </button>-->
+                  <button id="add-attachments" alt="Add an attachment" class="tool-icon shimmer">
+                    <svg id="fi_17089363" enable-background="new 0 0 100 100" viewBox="0 0 100 100"
+                      xmlns="http://www.w3.org/2000/svg">
+                      <path
+                        d="m89.4643478 51.6895256c10.0069046-10.0069008 10.7414551-23.2607193 1.7884674-32.2137032l-6.9090195-6.9090214c-8.8784637-8.8784637-21.6851692-8.0161648-31.8517532 2.1504202 0 0-43.9948425 43.9948425-44.0054893 44.0054855-7.7606673 7.7606697-8.1013336 20.7483482-.2874269 28.5409584.0958033.1171036.191618.2129135.2980709.3193665 7.8351927 7.8351974 20.5035019 7.9416504 28.4983788.3513107l37.6549759-37.6549721c5.748642-5.7486458 5.8976822-14.6058159.3513031-20.1521931l-1.0752106-1.0752125c-5.4399261-5.4399242-13.9457893-5.131197-19.7902451.7132587l-30.3361006 30.3360989c-1.478672 1.478672-1.478672 3.8760757 0 5.3547478l.0106564.0106583c1.478672 1.4786682 3.8760757 1.4786682 5.3547478 0l30.3361015-30.3361015c2.437851-2.437851 6.1744652-3.5982265 9.0594368-.713253l1.0858536 1.0858536c2.5762482 2.5762444 2.437851 6.6322327-.3513031 9.4213905l-37.303669 37.303669c-5.0034542 5.0034485-13.1473675 4.9928055-18.1401711 0-2.6826992-2.6826935-3.9282455-6.2702789-3.7366142-9.7833405.4151802-3.0765991 2.1291256-6.7280579 6.3022175-10.9011497l41.450531-41.450531c8.5697403-8.5697403 16.5220337-6.7280464 21.1103058-2.1397743l6.9090195 6.9090233c6.8025665 6.8025627 4.0134048 15.6810284-1.7778168 21.4722538l-37.3360005 37.3360002c-1.478672 1.4786758-1.478672 3.8760757 0 5.3547516h.0000076c1.478672 1.4786758 3.8760757 1.4786758 5.3547478 0z">
+                      </path>
+                    </svg>
+                  </button>
+
+                </div>
+
+                <!-- Visible editor -->
+                <div id="editor" contenteditable="true" aria-label="Message editor"
+                  data-placeholder="Type your message…"></div>
+
+                <!-- Hidden textarea for WhatsApp symbols -->
+                <textarea id="message" name="message" class="hidden" aria-hidden="true"></textarea>
+              </div>
+              <div class="tools-container">
+                <div id="attachments-container"></div>
+
+                <div class="attachment_box">
+                  <div class="navigation_outer_box_up navigation_container" hidden>
+                    <div class="msg-box-up">
+                      <p data-translate-text>You can also add attachments</p>
+                      <div class="arrow"></div>
+                    </div>
+                  </div>
+
+                  <div class="attach_symbol tooltip-trigger hide">
+                    <input type="file" id="select-attachments" multiple hidden />
+                    <img src="/logo/pro_attach_symbol.png" alt="Add an attachment" id="add-attachments"
+                      class="tool-icon shimmer hide" />
+                    <div class="add-tooltip-overlay hide"></div>
+
+                    <div class="tooltip-popup-container hide" style="display: none !important">
+                      <div class="tooltip-popup-content">
+                        <div class="tooltip-popup-row">
+                          <div class="tooltip-popup-title" data-translate-text>
+                            Did you know?
+                          </div>
+                          <div class="tooltip-popup-image">
+                            <img src="logo/pro-tooltip_popup_image.png" alt="tooltip-popup-image" />
+                          </div>
+                          <div class="close-tooltip">
+                            <svg class="delete-number-tag" xmlns="http://www.w3.org/2000/svg"
+                              xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" width="512" height="512" x="0"
+                              y="0" viewBox="0 0 24 24" style="enable-background: new 0 0 512 512" xml:space="preserve">
+                              <g>
+                                <path
+                                  d="M12 1a11 11 0 1 0 11 11A11.013 11.013 0 0 0 12 1zm4.242 13.829a1 1 0 1 1-1.414 1.414L12 13.414l-2.828 2.829a1 1 0 0 1-1.414-1.414L10.586 12 7.758 9.171a1 1 0 1 1 1.414-1.414L12 10.586l2.828-2.829a1 1 0 1 1 1.414 1.414L13.414 12z"
+                                  data-name="Layer 2" fill="#ff0000" opacity="1" data-original="#000000" class="">
+                                </path>
+                              </g>
+                            </svg>
+                          </div>
+                        </div>
+                        <div class="tooltip-popup-description" data-translate-text>
+                          You can now select and send multiple attachments to
+                          the same number
+                        </div>
+                        <button class="attachment-instructions-btn">
+                          <span class="attachment-instructions-icon attachment-instructions">i</span>
+                          <span class="attachment-instructions-text attachment-instructions CtaBtn"
+                            data-translate-text>How to send attachments?</span>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div id="template-box" class="template-box dropdown-box" style="display: none">
+                  <div id="template-selector" class="template-selector dropdown CtaBtn">
+                    <p class="text">Template</p>
+                    <img src="./logo/pro-down-arrow.png" alt="down-arrow icon" class="tool-normal-icon" />
+                  </div>
+
+                  <img id="template-save-icon" src="./logo/pro-floppy-disk.png" class="tool-icon hide" />
+                  <div id="templates-container" class="templates-container dropdown-container custom-scrollbar hide">
+                  </div>
+                </div>
+              </div>
+              <div id="add-caption-container" hidden>
+                <div class="caption_customization_input_div hide">
+                  <input type="checkbox" name="add_caption_customization" id="caption_customization" />
+                  <label for="add_caption_customization" data-translate-text>Add customization to caption</label>
+                </div>
+                <div id="caption-section" hidden="true">
+                  <div>
+                    <div class="captionMain">
+                      <div class="captionTextAreas"></div>
+                      <div class="caption_customize_container">
+                        <div class="caption_customize_section">
+                          <!-- <div class="customize_heading">Customizations:</div> -->
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="caption-tooltip hide">
+                  <div class="caption-tooltip-content">
+                    <div class="tooltip-popup-row">
+                      <div class="tooltip-popup-title" data-translate-text>
+                        Did you know?
+                      </div>
+                      <div class="tooltip-popup-image">
+                        <img src="logo/pro-cc.png" alt="tooltip-popup-image" />
+                      </div>
+                      <div class="close-tooltip">
+                        <svg class="delete-number-tag" xmlns="http://www.w3.org/2000/svg"
+                          xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" width="512" height="512" x="0" y="0"
+                          viewBox="0 0 24 24" style="enable-background: new 0 0 512 512" xml:space="preserve">
+                          <g>
+                            <path
+                              d="M12 1a11 11 0 1 0 11 11A11.013 11.013 0 0 0 12 1zm4.242 13.829a1 1 0 1 1-1.414 1.414L12 13.414l-2.828 2.829a1 1 0 0 1-1.414-1.414L10.586 12 7.758 9.171a1 1 0 1 1 1.414-1.414L12 10.586l2.828-2.829a1 1 0 1 1 1.414 1.414L13.414 12z"
+                              data-name="Layer 2" fill="#ff0000" opacity="1" data-original="#000000" class=""></path>
+                          </g>
+                        </svg>
+                      </div>
+                    </div>
+                    <div class="tooltip-popup-description" data-translate-text>
+                      You can also add caption to the attachment
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="action_checkboxes_div">
+              <div id="add-caption-checkbox-section" class="checkbox-section" hidden>
+                <input type="checkbox" name="checkbox" id="caption-checkbox" />
+                <label for="caption-checkbox" data-translate-text>Add Caption</label>
+                <div class="add-tooltip-overlay hide"></div>
+              </div>
+
+              <div id="attachment-first-checkbox-section" class="checkbox-section" hidden>
+                <input type="checkbox" name="checkbox" id="attachment-first-checkbox" />
+                <label for="attachment-first-checkbox" data-translate-text>Send attachment first</label>
+              </div>
+            </div>
+            <div class="action_buttons_div">
+              <div class="navigation_outer_box_down navigation_container" hidden>
+                <div class="msg-box-down">
+                  <p data-translate-text>Click to send messages</p>
+                  <div class="arrow"></div>
+                </div>
+              </div>
+
+              <div class="text_body" style="display: none" id="error_message"></div>
+
+              <button hidden class="CtaBtn" id="schedule">Schedule</button>
+              <button class="CtaBtn" id="sender">
+                <span class="ai-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                    class="lucide lucide-send w-4 h-4 mr-2" data-lov-id="src/components/WhatsAppAssistant.tsx:143:12"
+                    data-lov-name="Send" data-component-path="src/components/WhatsAppAssistant.tsx"
+                    data-component-line="143" data-component-file="WhatsAppAssistant.tsx" data-component-name="Send"
+                    data-component-content="%7B%22className%22%3A%22w-4%20h-4%20mr-2%22%7D">
+                    <path
+                      d="M14.536 21.686a.5.5 0 0 0 .937-.024l6.5-19a.496.496 0 0 0-.635-.635l-19 6.5a.5.5 0 0 0-.024.937l7.93 3.18a2 2 0 0 1 1.112 1.11z">
+                    </path>
+                    <path d="m21.854 2.147-10.94 10.939"></path>
+                  </svg></span>
+                Send
+              </button>
+
+              <div id="report-box" class="report-box dropdown-box" style="display: none">
+                <button id="report-selector" class="CtaBtn btn report-selector dropdown">
+                  Delivery Report
+                  <img src="./logo/pro-dropdown_icon.png" alt="Dropdown icon" />
+                </button>
+                <div id="reports-container" class="dropdown-container custom-scrollbar hide"></div>
+              </div>
+            </div>
+
+            <div id="right_section">
+              <div class="advance_options_container">
+                <h5 class="advance_option_text" data-translate-text>
+                  More Options
+                </h5>
+
+                <!-- Customisation -->
+                <!-- <div class="advance_option_div advance_option_row">
+                                <input type="checkbox" id="customization" name="customization" value="customization">
+                                <label data-translate-text>Add customisation from excel</label>
+                            </div> -->
+
+                <!-- Time Gap -->
+                <div id="time_gap" class="advance_option_div">
+                  <div class="advance_option_row">
+                    <input type="checkbox" id="time_gap_checked" name="time_gap" value="time_gap" />
+                    <label data-translate-text>Add a time gap between messages</label>
+                  </div>
+                  <div id="time_gap_type">
+                    <div>
+                      <input type="radio" id="sec" name="time_gap" value="sec" checked="true" />
+                      <input type="range" name="time_gap_sec" id="slider_time_gap_sec" min="0" max="11" value="3" />
+                      <input type="number" id="time_gap_sec" name="time_gap_sec" min="0" value="3" placeholder="3" />
+                      <span>sec</span>
+                    </div>
+                    <div>
+                      <input type="radio" id="random" name="time_gap" value="random" />
+                      <label for="random" id="random_label_text" class="text_color_gray">Random
+                        <span>(Recommended)</span></label>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Batching -->
+                <div id="batch" class="advance_option_div">
+                  <div class="advance_option_row">
+                    <input type="checkbox" id="batch_checked" name="batch" value="batch" />
+                    <label>
+                      <span data-translate-text>Add Batching</span>
+                      <span>(Recommended)</span>
+                    </label>
+                  </div>
+                  <div id="batch_info" hidden="true">
+                    <label>
+                      <span data-translate-text>Send in batches of</span>
+                      <div>
+                        <input type="range" name="batch_size" id="slider_batch_size" min="0" max="17" />
+                        <input type="number" id="batch_size" name="batch_size" min="1" max="500" placeholder="50" />
+                        <span>messages</span>
+                      </div>
+                    </label>
+
+                    <label>
+                      <span data-translate-text>Add a time gap b/w batches of</span>
+                      <div>
+                        <input type="range" name="batch_gap" id="slider_batch_gap" min="0" max="17" />
+                        <input type="number" id="batch_gap" name="batch_gap" min="1" max="500" placeholder="30" />
+                        <span>seconds</span>
+                      </div>
+                    </label>
+                  </div>
+                </div>
+
+                <!-- Schedule -->
+                <div id="schedule" class="advance_option_div" style="display: none">
+                  <div id="schedule_div" class="advance_option_row">
+                    <input type="checkbox" name id="schedule_checkbox" />
+                    <label data-translate-text>Schedule your campaign</label>
+                    <div id="schedule_day_div" class="col_span" style="display: none">
+                      <label for="schedule_day">Schedule date: </label>
+                      <input type="date" id="schedule_day" name="schedule_day" class="col_span" />
+                    </div>
+                    <div id="schedule_time_div" class="col_span" style="display: none">
+                      <label for="schedule_time">Schedule time: </label>
+                      <input type="time" id="schedule_time" name="schedule_time" class="col_span" />
+                    </div>
+                  </div>
+                  <div id="scheduled_campaigns">
+                    <div id="schedule-box" class="schedule-box dropdown-box">
+                      <button id="schedule_selector" class="CtaBtn btn schedule_selector dropdown">
+                        View upcoming campaigns
+                        <img src="./logo/pro-dropdown_icon.png" alt="Dropdown icon" />
+                      </button>
+                      <div id="schedule_container" class="dropdown-container custom-scrollbar hide"></div>
+                    </div>
+                  </div>
+                  <div id="schedule_campaign_error" hidden>
+                    <span data-translate-text>Schedule your next campaign after</span><br />
+                    <span id="schedule_campaign_error_time"></span><span data-translate-text>to avoid overlapping</span>
+                    <span data-translate-text>of campaigns</span>
+                  </div>
+                  <div id="schedule_campaign_error2" data-translate-text hidden>
+                    You can schedule maximum 10 campaigns at a time
+                  </div>
+                  <div id="schedule_message_div" hidden>
+                    <span style="display: block" data-translate-text>Please do not run any normal campaign before the
+                      scheduled time.</span>
+                    <div id="learn_schedule" data-translate-text>
+                      Learn More
+                    </div>
+                  </div>
+                </div>
+                <!-- paused campaign -->
+                <div id="paused_campaigns" class="advance_option_div">
+                  <div id="paused-campaign-box" class="paused-campaign-box dropdown-box">
+                    <button id="paused_campaign_selector" class="CtaBtn btn dropdown">
+                      Resume paused campaigns
+                      <img src="./logo/pro-dropdown_icon.png" alt="Dropdown icon" />
+                    </button>
+                    <div id="paused_campaign_container" class="dropdown-container custom-scrollbar hide"></div>
+                  </div>
+                </div>
+                <!-- paused campaign -->
+              </div>
+              <div id="tours" style="display: none">
+                <button class="attachment-instructions-btn use" id="how_to_use">
+                  <span class="attachment-instructions-icon attachment-instructions">i</span>
+                  <span class="attachment-instructions-text attachment-instructions CtaBtn" data-translate-text>How to
+                    use the assistant?</span>
+                </button>
+                <button class="attachment-instructions-btn attachments" id="how_to_send_attachments">
+                  <span class="attachment-instructions-icon attachment-instructions">i</span>
+                  <span class="attachment-instructions-text attachment-instructions CtaBtn" data-translate-text>How to
+                    send attachments?</span>
+                </button>
+                <button class="attachment-instructions-btn group" id="how_to_send_messages_to_groups">
+                  <span class="attachment-instructions-icon attachment-instructions">i</span>
+                  <span class="attachment-instructions-text attachment-instructions CtaBtn" data-translate-text>How to
+                    send messages to groups?</span>
+                </button>
+                <button class="attachment-instructions-btn contact" id="how_to_send_messages_to_contacts">
+                  <span class="attachment-instructions-icon attachment-instructions">i</span>
+                  <span class="attachment-instructions-text attachment-instructions CtaBtn" data-translate-text>How to
+                    send messages to contacts?</span>
+                </button>
+                <button class="attachment-instructions-btn customize" id="how_to_send_customized_messages">
+                  <span class="attachment-instructions-icon attachment-instructions">i</span>
+                  <span class="attachment-instructions-text attachment-instructions CtaBtn" data-translate-text>How to
+                    send customized messages ?</span>
+                </button>
+                <button class="attachment-instructions-btn unsaved" id="how_to_export_unsaved_contacts">
+                  <span class="attachment-instructions-icon attachment-instructions">i</span>
+                  <span class="attachment-instructions-text attachment-instructions CtaBtn" data-translate-text>How to
+                    export unsaved chat contacts?</span>
+                </button>
+              </div>
+            </div>
+
+
+
+
+          </div>
+          <div class="template-save-popup-container main-popup-container hide">
+            <div class="popup_overlay"></div>
+            <div class="template-save-popup main-popup">
+              <div class="popup-header">
+                <h3 class="title">Add Template</h3>
+                <span class="template-popup-close-button main-popup-close-button">
+                  <svg class="delete-number-tag" xmlns="http://www.w3.org/2000/svg"
+                    xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" width="512" height="512" x="0" y="0"
+                    viewBox="0 0 24 24" style="enable-background: new 0 0 512 512" xml:space="preserve">
+                    <g>
+                      <path
+                        d="M12 1a11 11 0 1 0 11 11A11.013 11.013 0 0 0 12 1zm4.242 13.829a1 1 0 1 1-1.414 1.414L12 13.414l-2.828 2.829a1 1 0 0 1-1.414-1.414L10.586 12 7.758 9.171a1 1 0 1 1 1.414-1.414L12 10.586l2.828-2.829a1 1 0 1 1 1.414 1.414L13.414 12z"
+                        data-name="Layer 2" fill="#ff0000" opacity="1" data-original="#000000" class=""></path>
+                    </g>
+                  </svg>
+                </span>
+              </div>
+              <form id="save-template-form">
+                <input type="hidden" id="edit-template-index" value />
+                <textarea id="template-msg" rows="5" cols="20" title="Template Message" required></textarea>
+                <div class="save-as">
+                  <p class="text">Save as</p>
+                  <input type="text" id="template-name" placeholder="Template Name" title="Template Name" maxlength="15"
+                    required data-translate-placeholder />
+                </div>
+                <button class="btn CtaBtn" type="submit">
+                  Save Template
+                </button>
+              </form>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <div style="display: none"></div>
+
+      <div class="links_div" style="display: none">
+        <div class="row">
+          <div id="help" class="CtaLiveSupport">
+            <img src="logo/pro-help-1.png" />
+            <span id="live_support_text" data-translate-text>Chat Support</span>
+            <span id="email_support_text" data-translate-text hidden>Email Support</span>
+          </div>
+          <div class="language-selector-container">
+            <img id="translate-icon" src="./logo/pro-language-translate.png" alt="Translate Icon" class="shimmer" />
+            <select name="language-select" id="language-selector" class="shimmer"></select>
+          </div>
+        </div>
+        <div class="row">
+          <div id="chat_link" class="CtaBtn">
+            <img src="logo/pro-whatsapp.png" />
+            <span data-translate-text>Business Chat Link for your number</span>
+          </div>
+          <!-- <div id="how_to_use" class="CtaBtn" >
+                        <button >?</button>
+                        <span  data-translate-text>How to use </span>
+                    </div> -->
+        </div>
+      </div>
+    </div>
+
+    <!-- Profile Page -->
+    <div id="profile-page"></div>
+
+    <div class="footer_div">
+      <div class="footer_content">
+        <div class="footer_links">
+          <a href="https://wa.me/919829037880?text=Hello%20Team%2C%20I%20visited%20your%20site%20and%20want%20to%20know%20more%20about%20your%20services."
+            target="_blank" rel="noopener noreferrer">
+            Contact Us
+          </a>
+          |
+          <a href="#" target="_blank" data-translate-text>Help</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Scroll Down Indicator -->
+    <div id="scroll-down-indicator" class="scroll-down-indicator" style="display:none;">
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="6 9 12 15 18 9"></polyline>
+      </svg>
+    </div>
+  </div>
+
+
+</body>
+
+</html>
